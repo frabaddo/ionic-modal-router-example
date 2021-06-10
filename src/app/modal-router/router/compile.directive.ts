@@ -47,7 +47,7 @@ export class CompileDirective implements OnChanges {
 
   private createDynamicComponent (template:string) {
     @Component({
-      selector: 'custom-dynamic-component',
+      selector: 'router-container',
       template: template,
       styles:[":host{display:contents}"],
       encapsulation:ViewEncapsulation.ShadowDom

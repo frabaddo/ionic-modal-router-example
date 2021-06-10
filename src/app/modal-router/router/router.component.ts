@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NavigationExtras, Router, Routes } from '@angular/router';
+import { NavigationExtras, Routes } from '@angular/router';
 import { ModalRouterController } from '../modal-router.service';
 
 @Component({
-  selector: 'modal-router-router',
+  selector: 'modal-router',
   templateUrl: './router.component.html',
   styleUrls: ['./router.component.scss']
 })
