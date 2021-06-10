@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NavigationExtras, Routes } from '@angular/router';
-import { ModalRouterController } from '../modal-router.service';
+import { NavigationExtras, Router, Routes } from '@angular/router';
 
 @Component({
   selector: 'modal-router',
@@ -17,17 +16,21 @@ export class RouterComponent implements OnInit {
   renderrouter=false;
 
   constructor(
-    private modalrouter:ModalRouterController
+    private router:Router
   ) { }
 
   ngOnInit(){
     this.template = '<style> router-outlet ~ * { height:100% } </style> <router-outlet name="'+this.name+'"></router-outlet>';
     this.renderrouter = true;
     if(this.initialNavigation){
-      this.modalrouter.navigate(this.initialNavigation[0],this.initialNavigation[1],this.name);
+      let path = {};
+      path[this.name]=this.initialNavigation[0];
+      this.router.navigate([{outlets:path}],this.initialNavigation[1])
     }
     else{
-      this.modalrouter.navigate([this.routes[0].path],undefined,this.name);
+      let path = {};
+      path[this.name]=[this.routes[0].path];
+      this.router.navigate([{outlets:path}])
     }
   }
 
