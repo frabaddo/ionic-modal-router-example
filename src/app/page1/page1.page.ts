@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
-import { comp1, comp2 } from '../app.component';
+import { comp1, comp2 } from '../comp/comp';
 import { ModalRouterController } from '../modal-router/modal-router.service';
 
 @Component({

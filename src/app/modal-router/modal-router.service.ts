@@ -136,7 +136,7 @@ private createWithRoutes : CreateModalRouter = async ({routes, outletName = this
   
   public navigate : namedNavigate = (command, extra = undefined, name = this.getTop().name) => {
     let path = {};
-    if(!this.modals.get(name).routesYetRegistered) command.unshift(name);
+    //if(!this.modals.get(name).routesYetRegistered) command.unshift(name);
     path[name]=command;
     return this.router.navigate([{outlets:path}],extra)
   }
@@ -148,7 +148,7 @@ private createWithRoutes : CreateModalRouter = async ({routes, outletName = this
 
   private addRoutes(routes:Routes, name:string = this.defaultRouterName){
     let enchanchedRoutes : Routes = [{
-      path:name,
+      path:"",
       component:ɵEmptyOutletComponent,
       children:routes,
       outlet:name

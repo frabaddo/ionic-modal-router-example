@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ModalRouterController } from './modal-router.service';
@@ -15,9 +15,13 @@ import { CompileDirective } from './router/compile.directive';
     CommonModule,
     RouterModule.forChild([]),
     IonicModule
-  ],
-  providers:[
-    ModalRouterController
   ]
 })
-export class ModalRouterModule { }
+export class ModalRouterModule { 
+  static forRoot(): ModuleWithProviders<ModalRouterModule> {
+    return {
+      ngModule: ModalRouterModule,
+      providers:[ ModalRouterController ]
+    };
+  }
+}
