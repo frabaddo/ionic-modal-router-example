@@ -5,19 +5,13 @@ import { RouterComponent } from './router/router.component';
 
 type namedNavigate = (commands: any[], extras?: NavigationExtras, name?:string) => Promise<boolean>;
 
-export type ModalRouterOptionsWithoutRoute = {
-  routes? : Routes;
-  outletName : string;
-  initialNavigation : [commands: any[], extras?: NavigationExtras]
-}
-
-export type ModalRouterOptionsWithRoute = {
-  routes : Routes; 
+export type ModalRouterOptions = {
+  routes? : Routes; 
   outletName : string;
   initialNavigation? : [commands: any[], extras?: NavigationExtras]
 }
 
-type CreateModalRouter = (options: ModalRouterOptionsWithRoute | ModalRouterOptionsWithoutRoute )=>Promise<HTMLIonModalElement>
+type CreateModalRouter = (options: ModalRouterOptions )=>Promise<HTMLIonModalElement>
 
 
 @Injectable()
@@ -39,7 +33,7 @@ export class ModalRouterController {
  * @param [initialNavigation] Warning: extra are not scooped to this secondary router
  * @returns HTMLIonModalElement ready to be presented 
  */
-  public async create(opts: ModalRouterOptionsWithRoute | ModalRouterOptionsWithoutRoute):Promise<HTMLIonModalElement>{
+  public async create(opts: ModalRouterOptions):Promise<HTMLIonModalElement>{
     if(opts.routes) return this.createWithRoutes(opts);
     else return this.createWithoutRoutes(opts);
   }
@@ -51,7 +45,7 @@ export class ModalRouterController {
  * @param [initialNavigation] Warning: extra are not scooped to this secondary router
  * @returns HTMLIonModalElement ready to be presented 
  */
-private createWithRoutes : CreateModalRouter = async ({routes, outletName = this.defaultRouterName, initialNavigation = undefined} : ModalRouterOptionsWithRoute) : Promise<HTMLIonModalElement> => {
+private createWithRoutes : CreateModalRouter = async ({routes, outletName = this.defaultRouterName, initialNavigation = undefined} : ModalRouterOptions) : Promise<HTMLIonModalElement> => {
     if(this.modals.has(outletName)) throw("modal-router with same name already exists");
     if(this.routesWithOutletNameExists(outletName,this.router.config)) throw("outlet name already exists in some routes");
     this.modals.set(outletName,undefined);
@@ -89,8 +83,9 @@ private createWithRoutes : CreateModalRouter = async ({routes, outletName = this
  * @param [initialNavigation] Warning: extra are not scooped to this secondary router
  * @returns HTMLIonModalElement ready to be presented 
  */
-  private createWithoutRoutes : CreateModalRouter = async ({routes ,outletName = this.defaultRouterName, initialNavigation = undefined} : ModalRouterOptionsWithoutRoute) : Promise<HTMLIonModalElement> => {
+  private createWithoutRoutes : CreateModalRouter = async ({routes ,outletName = this.defaultRouterName, initialNavigation = undefined} : ModalRouterOptions) : Promise<HTMLIonModalElement> => {
     if(this.modals.has(outletName)) throw("modal-router with same name already exists");
+    if(!initialNavigation) throw("initialNavigation must be provided if no routes are provided");
     this.modals.set(outletName,undefined);
     return this.modalCtrl.create({
       component:RouterComponent,
