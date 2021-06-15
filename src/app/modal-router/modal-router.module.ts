@@ -21,7 +21,7 @@ export class ModalRouterModule {
   static forRoot(): ModuleWithProviders<ModalRouterModule> {
     return {
       ngModule: ModalRouterModule,
-      providers:[ ModalRouterController ]
+      providers:[ ModalRouterController]
     };
   }
 }

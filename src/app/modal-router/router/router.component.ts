@@ -4,7 +4,7 @@ import { NavigationExtras, Router, Routes } from '@angular/router';
 @Component({
   selector: 'modal-router',
   templateUrl: './router.component.html',
-  styleUrls: ['./router.component.scss']
+  styles: [':host{display:contents}']
 })
 export class RouterComponent implements OnInit {
 
@@ -13,6 +13,7 @@ export class RouterComponent implements OnInit {
   @Input("initialNavigation") initialNavigation : [commands: any[], extras?: NavigationExtras]
 
   template:string;
+  cname:string;
   renderrouter=false;
 
   constructor(
@@ -20,7 +21,8 @@ export class RouterComponent implements OnInit {
   ) { }
 
   ngOnInit(){
-    this.template = '<style> router-outlet ~ * { height:100% } </style> <router-outlet name="'+this.name+'"></router-outlet>';
+    this.cname=this.name;
+    this.template = '<style> router-outlet ~ * { height:100% } </style> <dynamic-router-outlet></dynamic-router-outlet>';
     this.renderrouter = true;
     if(this.initialNavigation){
       let path = {};

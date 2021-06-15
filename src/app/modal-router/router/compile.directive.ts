@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
-import { Compiler, Component, ComponentRef, Directive, Input, ModuleWithComponentFactories, NgModule, OnChanges, Type, ViewContainerRef, ViewEncapsulation } from "@angular/core";
+import { Compiler, Component, ComponentRef, Directive, Inject, Injector, Input, ModuleWithComponentFactories, NgModule, OnChanges, Type, ViewContainerRef, ViewEncapsulation } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { DynamicRouterOutlet, OUTLET_NAME } from "./dynamic-router/dynamic_router_outlet";
 
 @Directive({
   selector: '[compile]'
@@ -8,10 +9,11 @@ import { RouterModule } from "@angular/router";
 export class CompileDirective implements OnChanges {
   @Input() compile: string;
   @Input() compileContext: any;
+  @Input() compileName: any;
 
   compRef: ComponentRef<any>;
 
-  constructor(private vcRef: ViewContainerRef, private compiler: Compiler) {}
+  constructor(private vcRef: ViewContainerRef, private compiler: Compiler,private injector:Injector) {}
 
   ngOnChanges() {
     if(!this.compile) {
@@ -30,8 +32,7 @@ export class CompileDirective implements OnChanges {
     this.compiler.compileModuleAndAllComponentsAsync(module)
       .then((moduleWithFactories: ModuleWithComponentFactories<any>) => {
         let compFactory = moduleWithFactories.componentFactories.find(x => x.componentType === component);
-
-        this.compRef = this.vcRef.createComponent(compFactory);
+        this.compRef = this.vcRef.createComponent(compFactory,0,this.injector,[],moduleWithFactories.ngModuleFactory.create(this.injector));
         this.updateProperties();
       })
       .catch(error => {
@@ -57,12 +58,14 @@ export class CompileDirective implements OnChanges {
   }
 
   private createDynamicModule (component: Type<any>) {
+    console.log(this.compileName);
     @NgModule({
       // You might need other modules, providers, etc...
       // Note that whatever components you want to be able
       // to render dynamically must be known to this module
       imports: [CommonModule,RouterModule.forChild([])],
-      declarations: [component]
+      declarations: [component,DynamicRouterOutlet],
+      providers:[{provide: OUTLET_NAME,useValue:this.compileName}]
     })
     class DynamicModule {}
     return DynamicModule;
