@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Compiler, Component, ComponentRef, Directive, Injector, Input, ModuleWithComponentFactories, NgModule, NgModuleRef, OnDestroy, OnInit, Type, ViewContainerRef, ViewEncapsulation } from "@angular/core";
-import { RouterModule } from "@angular/router";
-import { DynamicRouterOutlet, OUTLET_NAME } from "./dynamic-router/dynamic_router_outlet";
+import { DynamicRouterOutletModule } from "./dynamic-router/dynamic-router-outlet.module";
+import { OUTLET_NAME } from "./dynamic-router/dynamic_router_outlet";
 
 @Component({
   selector: 'router-container',
@@ -52,8 +52,8 @@ export class NamedRouterDirective implements OnInit, OnDestroy {
 
   private createDynamicModule () {
     @NgModule({
-      imports: [CommonModule,RouterModule.forChild([])],
-      declarations: [CustomDynamicComponent,DynamicRouterOutlet]
+      imports: [CommonModule,DynamicRouterOutletModule],
+      declarations: [CustomDynamicComponent]
     })
     class DynamicModule {}
     return DynamicModule;
