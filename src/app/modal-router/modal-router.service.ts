@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NavigationExtras, Router, Routes, ɵEmptyOutletComponent } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { RouterComponent } from './router/router.component';
+import { ModalRouterComponent } from './router/modal-router.component';
 
 type namedNavigate = (commands: any[], extras?: NavigationExtras, name?:string) => Promise<boolean>;
 
@@ -51,7 +51,7 @@ private createWithRoutes : CreateModalRouter = async ({routes, outletName = this
     this.modals.set(outletName,undefined);
     this.addRoutes(routes,outletName);
     return this.modalCtrl.create({
-      component:RouterComponent,
+      component:ModalRouterComponent,
       cssClass:["modal-router"],
       componentProps:{
         name: outletName,
@@ -88,7 +88,7 @@ private createWithRoutes : CreateModalRouter = async ({routes, outletName = this
     if(!initialNavigation) throw("initialNavigation must be provided if no routes are provided");
     this.modals.set(outletName,undefined);
     return this.modalCtrl.create({
-      component:RouterComponent,
+      component:ModalRouterComponent,
       cssClass:["modal-router"],
       componentProps:{
         name: outletName,

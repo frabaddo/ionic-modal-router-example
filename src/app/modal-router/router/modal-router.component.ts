@@ -3,10 +3,10 @@ import { NavigationExtras, Router, Routes } from '@angular/router';
 
 @Component({
   selector: 'modal-router',
-  templateUrl: './router.component.html',
+  templateUrl: './modal-router.component.html',
   styles: [':host{display:contents}']
 })
-export class RouterComponent implements OnInit {
+export class ModalRouterComponent implements OnInit {
 
   @Input("name") name : string;
   @Input("routes") routes : Routes;
