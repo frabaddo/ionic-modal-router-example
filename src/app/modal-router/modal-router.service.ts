@@ -8,7 +8,9 @@ type namedNavigate = (commands: any[], extras?: NavigationExtras, name?:string) 
 export type ModalRouterOptions = {
   routes? : Routes; 
   outletName : string;
-  cssClass?: string | string[]
+  cssClass?: string | string[],
+  showBackdrop?:boolean,
+  backdropDismiss?:boolean,
   initialNavigation? : [commands: any[], extras?: NavigationExtras]
 }
 
@@ -46,7 +48,14 @@ export class ModalRouterController {
  * @param [cssClass] a list of class to add to the modal
  * @returns HTMLIonModalElement ready to be presented 
  */
-private createWithRoutes = async ({routes, outletName = this.defaultRouterName, initialNavigation = undefined, cssClass = []} : ModalRouterOptions) : Promise<HTMLIonModalElement> => {
+private createWithRoutes = async ({
+  routes, 
+  outletName = this.defaultRouterName, 
+  initialNavigation = undefined, 
+  cssClass = [],
+  showBackdrop = false,
+  backdropDismiss = false
+} : ModalRouterOptions) : Promise<HTMLIonModalElement> => {
     if(this.modals.has(outletName)) throw("modal-router with same name already exists");
     if(this.routesWithOutletNameExists(outletName,this.router.config)) throw("outlet name already exists in some routes");
     this.modals.set(outletName,undefined);
@@ -54,6 +63,8 @@ private createWithRoutes = async ({routes, outletName = this.defaultRouterName, 
     return this.modalCtrl.create({
       component: ModalRouterComponent,
       cssClass: cssClass,
+      showBackdrop: showBackdrop,
+      backdropDismiss: backdropDismiss,
       componentProps:{
         name: outletName,
         routes: routes,
@@ -85,13 +96,21 @@ private createWithRoutes = async ({routes, outletName = this.defaultRouterName, 
  * @param [cssClass] a list of class to add to the modal
  * @returns HTMLIonModalElement ready to be presented 
  */
-  private createWithoutRoutes = async ({outletName = this.defaultRouterName, initialNavigation = undefined, cssClass = []} : ModalRouterOptions) : Promise<HTMLIonModalElement> => {
+  private createWithoutRoutes = async ({
+    outletName = this.defaultRouterName, 
+    initialNavigation = undefined, 
+    cssClass = [],
+    showBackdrop = false,
+    backdropDismiss = false
+  } : ModalRouterOptions) : Promise<HTMLIonModalElement> => {
     if(this.modals.has(outletName)) throw("modal-router with same name already exists");
     if(!initialNavigation) throw("initialNavigation must be provided if no routes are provided");
     this.modals.set(outletName,undefined);
     return this.modalCtrl.create({
       component: ModalRouterComponent,
       cssClass: cssClass,
+      showBackdrop: showBackdrop,
+      backdropDismiss: backdropDismiss,
       componentProps:{
         name: outletName,
         initialNavigation: initialNavigation

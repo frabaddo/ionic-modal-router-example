@@ -29,6 +29,9 @@ export class Page1Page {
     this.modalrouter.create({
       routes:this.routes,
       outletName:"test2" ,
+      cssClass:"popover",
+      showBackdrop:true,
+      backdropDismiss:true,
       initialNavigation:[["comp1","123567"],{queryParams:{test:5}}]
     }).then((modal)=>{
       modal.present();

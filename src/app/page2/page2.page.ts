@@ -28,7 +28,10 @@ export class Page2Page {
   open(){
     this.modalrouter.create({
       routes:this.routes,
-      outletName:"test2"
+      outletName:"test2",
+      cssClass:"popover",
+      showBackdrop:true,
+      backdropDismiss:true,
     }).then((modal)=>{
       modal.present();
     })
