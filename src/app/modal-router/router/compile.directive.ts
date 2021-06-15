@@ -1,43 +1,56 @@
 import { CommonModule } from "@angular/common";
-import { Compiler, Component, ComponentRef, Directive, Inject, Injector, Input, ModuleWithComponentFactories, NgModule, OnChanges, Type, ViewContainerRef, ViewEncapsulation } from "@angular/core";
+import { Compiler, Component, ComponentRef, Directive, Inject, Injector, Input, ModuleWithComponentFactories, NgModule, NgModuleRef, OnChanges, OnDestroy, Type, ViewContainerRef, ViewEncapsulation } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { DynamicRouterOutlet, OUTLET_NAME } from "./dynamic-router/dynamic_router_outlet";
+
+@Component({
+  selector: 'router-container',
+  template: "<style> dynamic-router-outlet ~ * { height:100% } </style> <dynamic-router-outlet></dynamic-router-outlet>",
+  styles:[":host{display:contents}"],
+  encapsulation:ViewEncapsulation.ShadowDom
+})
+class CustomDynamicComponent {}
 
 @Directive({
   selector: '[compile]'
 })
-export class CompileDirective implements OnChanges {
+export class CompileDirective implements OnChanges, OnDestroy {
   @Input() compile: string;
   @Input() compileContext: any;
-  @Input() compileName: any;
 
   compRef: ComponentRef<any>;
+
+  moduleProviderRef : NgModuleRef<any>;
 
   constructor(private vcRef: ViewContainerRef, private compiler: Compiler,private injector:Injector) {}
 
   ngOnChanges() {
     if(!this.compile) {
-      if(this.compRef) {
-        this.updateProperties();
-        return;
-      }
-      throw Error('You forgot to provide template');
+      throw Error('You forgot to provide a name');
     }
 
     this.vcRef.clear();
     this.compRef = null;
 
-    const component = this.createDynamicComponent(this.compile);
-    const module = this.createDynamicModule(component);
+    const module = this.createDynamicModule(CustomDynamicComponent);
+    const moduleProviders = this.createProvidersDynamicModule();
     this.compiler.compileModuleAndAllComponentsAsync(module)
       .then((moduleWithFactories: ModuleWithComponentFactories<any>) => {
-        let compFactory = moduleWithFactories.componentFactories.find(x => x.componentType === component);
-        this.compRef = this.vcRef.createComponent(compFactory,0,this.injector,[],moduleWithFactories.ngModuleFactory.create(this.injector));
-        this.updateProperties();
+        this.compiler.compileModuleAndAllComponentsAsync(moduleProviders)
+        .then((providers : ModuleWithComponentFactories<any>)=>{
+          let compFactory = moduleWithFactories.componentFactories.find(x => x.componentType === CustomDynamicComponent);
+          this.moduleProviderRef = providers.ngModuleFactory.create(this.injector);
+          this.compRef = this.vcRef.createComponent(compFactory,0,this.injector,[],this.moduleProviderRef);
+          this.updateProperties();
+        })
       })
       .catch(error => {
         console.log(error);
       });
+  }
+
+  ngOnDestroy(){
+    if(this.moduleProviderRef) this.moduleProviderRef.destroy();
   }
 
   updateProperties() {
@@ -46,26 +59,18 @@ export class CompileDirective implements OnChanges {
     }
   }
 
-  private createDynamicComponent (template:string) {
-    @Component({
-      selector: 'router-container',
-      template: template,
-      styles:[":host{display:contents}"],
-      encapsulation:ViewEncapsulation.ShadowDom
+  private createDynamicModule (component: Type<any>) {
+    @NgModule({
+      imports: [CommonModule,RouterModule.forChild([])],
+      declarations: [component,DynamicRouterOutlet]
     })
-    class CustomDynamicComponent {}
-    return CustomDynamicComponent;
+    class DynamicModule {}
+    return DynamicModule;
   }
 
-  private createDynamicModule (component: Type<any>) {
-    console.log(this.compileName);
+  private createProvidersDynamicModule () {
     @NgModule({
-      // You might need other modules, providers, etc...
-      // Note that whatever components you want to be able
-      // to render dynamically must be known to this module
-      imports: [CommonModule,RouterModule.forChild([])],
-      declarations: [component,DynamicRouterOutlet],
-      providers:[{provide: OUTLET_NAME,useValue:this.compileName}]
+      providers:[{provide: OUTLET_NAME,useValue:this.compile}]
     })
     class DynamicModule {}
     return DynamicModule;

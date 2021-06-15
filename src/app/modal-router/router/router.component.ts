@@ -12,7 +12,6 @@ export class RouterComponent implements OnInit {
   @Input("routes") routes : Routes;
   @Input("initialNavigation") initialNavigation : [commands: any[], extras?: NavigationExtras]
 
-  template:string;
   cname:string;
   renderrouter=false;
 
@@ -22,7 +21,6 @@ export class RouterComponent implements OnInit {
 
   ngOnInit(){
     this.cname=this.name;
-    this.template = '<style> router-outlet ~ * { height:100% } </style> <dynamic-router-outlet></dynamic-router-outlet>';
     this.renderrouter = true;
     if(this.initialNavigation){
       let path = {};

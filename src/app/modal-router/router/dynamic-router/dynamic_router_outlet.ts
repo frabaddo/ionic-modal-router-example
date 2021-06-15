@@ -130,7 +130,6 @@ export class DynamicRouterOutlet implements OnDestroy, OnInit, RouterOutletContr
         private resolver: ComponentFactoryResolver, @Attribute("name") name: string,
         private changeDetector: ChangeDetectorRef, @Inject(OUTLET_NAME) outlet : string) {
         this.name = name || outlet;
-        console.log(this.name);
         parentContexts.onChildOutletCreated(this.name, this);
     }
 
