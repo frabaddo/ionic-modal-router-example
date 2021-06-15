@@ -4,12 +4,12 @@ import { IonicModule } from '@ionic/angular';
 import { ModalRouterController } from './modal-router.service';
 import { RouterModule } from '@angular/router';
 import { RouterComponent } from './router/router.component';
-import { CompileDirective } from './router/compile.directive';
+import { NamedRouterDirective } from './router/named-router.directive';
 
 @NgModule({
   declarations: [
     RouterComponent,
-    CompileDirective
+    NamedRouterDirective
   ],
   imports: [
     CommonModule,

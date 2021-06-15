@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Compiler, Component, ComponentRef, Directive, Inject, Injector, Input, ModuleWithComponentFactories, NgModule, NgModuleRef, OnChanges, OnDestroy, Type, ViewContainerRef, ViewEncapsulation } from "@angular/core";
+import { Compiler, Component, ComponentRef, Directive, Injector, Input, ModuleWithComponentFactories, NgModule, NgModuleRef, OnDestroy, OnInit, Type, ViewContainerRef, ViewEncapsulation } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { DynamicRouterOutlet, OUTLET_NAME } from "./dynamic-router/dynamic_router_outlet";
 
@@ -12,11 +12,10 @@ import { DynamicRouterOutlet, OUTLET_NAME } from "./dynamic-router/dynamic_route
 class CustomDynamicComponent {}
 
 @Directive({
-  selector: '[compile]'
+  selector: '[namedRouter]'
 })
-export class CompileDirective implements OnChanges, OnDestroy {
-  @Input() compile: string;
-  @Input() compileContext: any;
+export class NamedRouterDirective implements OnInit, OnDestroy {
+  @Input() namedRouter: string;
 
   compRef: ComponentRef<any>;
 
@@ -24,15 +23,14 @@ export class CompileDirective implements OnChanges, OnDestroy {
 
   constructor(private vcRef: ViewContainerRef, private compiler: Compiler,private injector:Injector) {}
 
-  ngOnChanges() {
-    if(!this.compile) {
+  ngOnInit() {
+    if(!this.namedRouter) {
       throw Error('You forgot to provide a name');
     }
 
     this.vcRef.clear();
-    this.compRef = null;
 
-    const module = this.createDynamicModule(CustomDynamicComponent);
+    const module = this.createDynamicModule();
     const moduleProviders = this.createProvidersDynamicModule();
     this.compiler.compileModuleAndAllComponentsAsync(module)
       .then((moduleWithFactories: ModuleWithComponentFactories<any>) => {
@@ -41,7 +39,6 @@ export class CompileDirective implements OnChanges, OnDestroy {
           let compFactory = moduleWithFactories.componentFactories.find(x => x.componentType === CustomDynamicComponent);
           this.moduleProviderRef = providers.ngModuleFactory.create(this.injector);
           this.compRef = this.vcRef.createComponent(compFactory,0,this.injector,[],this.moduleProviderRef);
-          this.updateProperties();
         })
       })
       .catch(error => {
@@ -53,16 +50,10 @@ export class CompileDirective implements OnChanges, OnDestroy {
     if(this.moduleProviderRef) this.moduleProviderRef.destroy();
   }
 
-  updateProperties() {
-    for(var prop in this.compileContext) {
-      this.compRef.instance[prop] = this.compileContext[prop];
-    }
-  }
-
-  private createDynamicModule (component: Type<any>) {
+  private createDynamicModule () {
     @NgModule({
       imports: [CommonModule,RouterModule.forChild([])],
-      declarations: [component,DynamicRouterOutlet]
+      declarations: [CustomDynamicComponent,DynamicRouterOutlet]
     })
     class DynamicModule {}
     return DynamicModule;
@@ -70,7 +61,7 @@ export class CompileDirective implements OnChanges, OnDestroy {
 
   private createProvidersDynamicModule () {
     @NgModule({
-      providers:[{provide: OUTLET_NAME,useValue:this.compile}]
+      providers:[{provide: OUTLET_NAME,useValue:this.namedRouter}]
     })
     class DynamicModule {}
     return DynamicModule;
