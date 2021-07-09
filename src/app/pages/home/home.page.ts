@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
-import { ModalRouterController } from '../modal-router/modal-router.service';
+import { ModalRouterController } from '../../modal-router/modal-router.service';
 
 @Component({
   selector: 'app-home',

@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
-import { comp1, comp2 } from '../comp/comp';
-import { ModalRouterController } from '../modal-router/modal-router.service';
+import { comp1, comp2 } from '../../comp/comp';
+import { ModalRouterController } from '../../modal-router/modal-router.service';
 
 @Component({
-  selector: 'app-page2',
-  templateUrl: './page2.page.html',
-  styleUrls: ['./page2.page.scss'],
+  selector: 'app-page1',
+  templateUrl: './page1.page.html',
+  styleUrls: ['./page1.page.scss'],
 })
-export class Page2Page {
-  
+export class Page1Page {
+
   routes: Routes = [
     {
-      path:"comp1",
+      path:"comp1/:par",
       component:comp1
     },
     {
@@ -28,17 +28,18 @@ export class Page2Page {
   open(){
     this.modalrouter.create({
       routes:this.routes,
-      outletName:"test2",
+      outletName:"test2" ,
       cssClass:"popover",
       showBackdrop:true,
       backdropDismiss:true,
+      initialNavigation:[["comp1","123567"],{queryParams:{test:5}}]
     }).then((modal)=>{
       modal.present();
     })
   }
 
   navigate(){
-    this.modalrouter.navigate(["page1"])
+    this.modalrouter.navigate(["page2"])
   }
 
   close(){
